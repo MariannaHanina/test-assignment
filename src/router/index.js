@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import DashboardView from '../views/DashboardView.vue'
+import TradingDeskView from '../views/TradingDeskView.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'dashboard',
-    component: DashboardView
+    name: 'tradingDesk',
+    component: TradingDeskView
   },
   {
     path: '/websocket',
