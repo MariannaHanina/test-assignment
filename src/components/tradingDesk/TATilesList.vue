@@ -19,10 +19,10 @@ export default {
       required: true
     }
   },
-  emits: ['tileClick'],
+  emits: ['tile-click'],
   methods: {
     onClick(id) {
-      this.$emit('tileClick', id);
+      this.$emit('tile-click', id);
     }
   }
 }

@@ -2,23 +2,21 @@
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
     <ta-trading-desk @returnTile="showTile">
-      <template v-for="{id, title, isShown, width, height} in tiles" >
-        <ta-tile
-          v-if="isShown"
-          :key="id"
-          :tile-id="id"
-          :title="title"
-          :width="width"
-          :height="height"
-          @hideTile="hideTile"
-          @saveTileSize="saveTileSize"
-        />
-      </template>
-      <template v-slot:actions>
+      <ta-tile
+        v-for="{id, title, width, height} in shownTiles"
+        :key="id"
+        :tile-id="id"
+        :title="title"
+        :width="width"
+        :height="height"
+        @hide-tile="hideTile"
+        @save-tile-size="saveTileSize"
+      />
+      <template #actions>
         <ta-trading-desk-actions >
           <ta-tiles-list
             :tiles="hiddenTiles"
-            @tileClick="showTile"
+            @tile-click="showTile"
           />
         </ta-trading-desk-actions>
       </template>
@@ -53,6 +51,9 @@ export default {
     localStorage.setItem('tiles', JSON.stringify(this.tiles));
   },
   computed: {
+    shownTiles() {
+      return this.tiles.filter((tile) => tile.isShown);
+    },
     hiddenTiles() {
       return this.tiles.filter((tile) => !tile.isShown);
     }

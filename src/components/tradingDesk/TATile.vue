@@ -45,16 +45,16 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$emit('saveTileSize', {
+    this.$emit('save-tile-size', {
       id: this.tileId,
       width: this.newWidth,
       height: this.newHeight
     })
   },
-  emits: ['hideTile', 'saveTileSize'],
+  emits: ['hide-tile', 'save-tile-size'],
   methods: {
     hideTile() {
-      this.$emit('hideTile', this.tileId);
+      this.$emit('hide-tile', this.tileId);
     },
     resizeTile({ width, height }) {
       this.newWidth = width;

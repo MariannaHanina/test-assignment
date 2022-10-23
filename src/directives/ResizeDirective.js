@@ -8,8 +8,8 @@ export default {
       const { height, width } = contentRect;
       
       callback({
-        height: Math.ceil(height),
-        width: Math.ceil(width)
+        height: height,
+        width: width
       })
     });
     ro.observe(el);
