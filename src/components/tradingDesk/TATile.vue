@@ -1,21 +1,19 @@
 <template>
   <div
-    class="tile" 
-    :class="{'tile--active': isActive}"
+    class="tile"
     :style="styles"
-    @click="onClick"
+    v-resize="resizeTile"
   >
     <div class="tile-title">
       <span>{{ title }}</span>
       <button type="button" class="tile-remove-button" @click="hideTile">-</button>
     </div>
-    <div class="tile-body">
-      Body tile
-    </div>
+    <div class="tile-body" />
   </div>
 </template>
 
 <script>
+
 export default {
   name:'TATile',
   props: {
@@ -27,32 +25,40 @@ export default {
       type: String,
       required: true
     }, 
-    isActive: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data: () => {
-    return {
-      defaultWidth: '300px',
-      defaultHeight: '100px'
+    width: {
+      type: Number,
+      default: 300
+    },
+    height: {
+      type: Number,
+      default: 100
     }
   },
   computed: {
     styles: (vm) => {
       return {
-        width: vm.defaultWidth,
-        height: vm.defaultHeight
+        width: `${vm.width}px`,
+        height: `${vm.height}px`,
+        newWidth: null,
+        newHeight: null
       };
     }
   },
-  emits: ['click'],
+  beforeDestroy() {
+    this.$emit('saveTileSize', {
+      id: this.tileId,
+      width: this.newWidth,
+      height: this.newHeight
+    })
+  },
+  emits: ['hideTile', 'saveTileSize'],
   methods: {
-    onClick: function() {
-      this.$emit('click', this.tileId);
-    },
-    hideTile: function() {
+    hideTile() {
       this.$emit('hideTile', this.tileId);
+    },
+    resizeTile({ width, height }) {
+      this.newWidth = width;
+      this.newHeight = height;
     }
   }
 }
@@ -60,8 +66,15 @@ export default {
 
 <style scoped>
 .tile {
+  display: inline-block;
+
   border: 2px solid gray;
   margin: 10px;
+
+  cursor: pointer;
+
+  resize: both;
+  overflow: auto;
 }
 .tile-title {
   position: relative;
@@ -81,12 +94,25 @@ export default {
   padding: 10px;
 }
 
-.tile--active {
+.tile:hover{
   border-color: steelblue;
 }
 
-.tile--active .tile-title{
+.tile:hover .tile-title{
   background-color: lightskyblue;
   border-color: steelblue;
+}
+
+.tile-resize-y {
+  position: absolute;
+  bottom: 0;
+
+  height: 2px;
+  width: 100%;
+}
+.tile-resize-y:hover {
+  background-color: lightgray;
+
+  cursor: row-resize;
 }
 </style>

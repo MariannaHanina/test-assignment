@@ -3,24 +3,22 @@
     <div class="trading-desk-tiles">
       <slot />
     </div>
-    <button type="button" @click="onClick">+ Return tile to trading desk</button>
+    <div class="tradig-dest-actions">
+      <slot name="actions" />
+    </div>
   </div>
 </template>
 
 <script>
+
+
 export default {
-  name:'TATradingDesk',
-  emits: ['returnTile'],
-  methods: {
-    onClick: function() {
-      this.$emit('returnTile');
-    }
-  }
+  name:'TATradingDesk'
 }
 </script>
 
 <style scoped>
 .trading-desk-tiles {
-  display: flex;
+  position: relative;
 }
 </style>
