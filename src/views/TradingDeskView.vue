@@ -1,14 +1,19 @@
 <template>
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
-    <ta-trading-desk @returnTile="showTile">
+    <ta-trading-desk @return-tile="showTile" @get-el-position="getElPosition">
       <ta-tile
-        v-for="{id, title, width, height} in shownTiles"
+        v-for="{id, title, width, height, x, y, zIndex} in shownTiles"
         :key="id"
         :tile-id="id"
         :title="title"
         :width="width"
         :height="height"
+        :x="x"
+        :y="y"
+        :z-index="zIndex"
+        :is-active="activeTile === id"
+        @mousedown="activateTile"
         @hide-tile="hideTile"
         @save-tile-size="saveTileSize"
       />
@@ -25,7 +30,13 @@
 </template>
 
 <script>
-import { getTilesUIConfig } from '@/utils/tiles';
+import { 
+  getTilesUIConfig, 
+  getTileProps, 
+  defaultWidth as defaultTileWidth,
+  defautlHeight as defaultTileHeight,
+  defaultZIndex as defaultTileZIndex
+} from '@/utils/tiles';
 import TATradingDesk from '@/components/tradingDesk/TATradingDesk';
 import TATile from '@/components/tradingDesk/TATile';
 import TATradingDeskActions from '@/components/tradingDesk/TATradingDeskActions.vue';
@@ -42,6 +53,8 @@ export default {
   data: () => {
     return {
       tiles: [],
+      activeTile: null,
+      maxZIndex: defaultTileZIndex
     };
   },
   beforeMount() {
@@ -60,21 +73,50 @@ export default {
   },
   methods: {
     hideTile(tileId) {
-      const index = this.getTileIndex(tileId);
-      this.$set(this.tiles[index], 'isShown', false);
+      this.setTileParams(tileId, {
+        isShown: false
+      });
     },
     showTile(tileId) {
-      const index = this.getTileIndex(tileId);
-      this.$set(this.tiles[index], 'isShown', true);
+      this.setTileParams(tileId, {
+        width: defaultTileWidth,
+        height: defaultTileHeight,
+        isShown: true
+      });
     }, 
     saveTileSize(sizingData) {
       const { id: tileId, width, height } = sizingData;
-      const index = this.getTileIndex(tileId);
-      this.$set(this.tiles[index], 'width', width);
-      this.$set(this.tiles[index], 'height', height);
+      this.setTileParams(tileId, {
+        width,
+        height
+      });
     },
-    getTileIndex(tileId) {
-      return this.tiles.findIndex((tile) => tile.id == tileId);
+    activateTile(tileId) {
+      this.activeTile = tileId;
+      this.setIncreasedIndex(tileId);
+    },
+    getElPosition(e) {
+      const { target, position } = e;
+      const { x, y } = position;
+      const { tileId } = getTileProps(target);
+      this.setTileParams(tileId, {
+        x,
+        y
+      });
+      this.setIncreasedIndex(tileId);
+    },
+    setIncreasedIndex(tileId) {
+      this.maxZIndex = this.maxZIndex + 1;
+      this.setTileParams(tileId, {
+        zIndex: this.maxZIndex
+      });
+    },
+    setTileParams(tileId, params) {
+      const tile = this.tiles.find((tile) => tile.id == tileId);
+
+      for (let key in params) {
+        this.$set(tile, key, params[key]);
+      }
     }
   }
 }

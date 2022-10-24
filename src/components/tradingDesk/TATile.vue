@@ -1,8 +1,11 @@
 <template>
   <div
     class="tile"
+    :class="{ 'tile--active': isActive }"
     :style="styles"
+    @mousedown="activateTile"
     v-resize="resizeTile"
+    draggable
   >
     <div class="tile-title">
       <span>{{ title }}</span>
@@ -24,7 +27,11 @@ export default {
     title: {
       type: String,
       required: true
-    }, 
+    },
+    isActive: {
+      type: Boolean,
+      default: false
+    },
     width: {
       type: Number,
       default: 300
@@ -32,15 +39,36 @@ export default {
     height: {
       type: Number,
       default: 100
+    },
+    x: {
+      type: Number,
+      required: true
+    },
+    y: {
+      type: Number,
+      required: true
+    },
+    zIndex: {
+      type: Number,
+      required: true
     }
+  },
+  data() {
+    return {
+      newWidth: null,
+      newHeight: null,
+      initCoordinats: {},
+      newCoordinats: null
+    };
   },
   computed: {
     styles: (vm) => {
       return {
         width: `${vm.width}px`,
         height: `${vm.height}px`,
-        newWidth: null,
-        newHeight: null
+        left: `${vm.x}px`,
+        top: `${vm.y}px`,
+        'z-index': vm.zIndex
       };
     }
   },
@@ -48,11 +76,14 @@ export default {
     this.$emit('save-tile-size', {
       id: this.tileId,
       width: this.newWidth,
-      height: this.newHeight
+      height: this.newHeight 
     })
   },
-  emits: ['hide-tile', 'save-tile-size'],
+  emits: ['hide-tile', 'save-tile-size', 'mousedown'],
   methods: {
+    activateTile() {
+      this.$emit('mousedown', this.tileId);
+    },
     hideTile() {
       this.$emit('hide-tile', this.tileId);
     },
@@ -67,9 +98,10 @@ export default {
 <style scoped>
 .tile {
   display: inline-block;
-
+  background: white;
   border: 2px solid gray;
-  margin: 10px;
+
+  position: absolute;
 
   cursor: pointer;
 
@@ -94,11 +126,11 @@ export default {
   padding: 10px;
 }
 
-.tile:hover{
+.tile--active{
   border-color: steelblue;
 }
 
-.tile:hover .tile-title{
+.tile--active .tile-title{
   background-color: lightskyblue;
   border-color: steelblue;
 }
