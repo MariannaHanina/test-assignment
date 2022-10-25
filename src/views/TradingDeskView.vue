@@ -1,21 +1,14 @@
 <template>
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
-    <ta-trading-desk @return-tile="showTile" @get-el-position="getElPosition">
+    <ta-trading-desk @get-el-position="getElPosition">
       <ta-tile
-        v-for="{id, title, width, height, x, y, zIndex} in shownTiles"
-        :key="id"
-        :tile-id="id"
-        :title="title"
-        :width="width"
-        :height="height"
-        :x="x"
-        :y="y"
-        :z-index="zIndex"
-        :is-active="activeTile === id"
-        @mousedown="activateTile"
-        @hide-tile="hideTile"
-        @save-tile-size="saveTileSize"
+        v-for="(tile, index) in shownTiles"
+        v-model="shownTiles[index]"
+        :key="tile.id"
+        @inactivate-other-tiles="inactivateOtherTiles"
+        @increase-z-index="setIncreasedZIndex"
+        @tile-resized="saveTiles"
       />
       <template #actions>
         <ta-trading-desk-actions >
@@ -32,7 +25,8 @@
 <script>
 import { 
   getTilesUIConfig, 
-  getTileProps, 
+  getTileProps,
+  setTileParams,
   defaultWidth as defaultTileWidth,
   defautlHeight as defaultTileHeight,
   defaultZIndex as defaultTileZIndex
@@ -53,7 +47,6 @@ export default {
   data: () => {
     return {
       tiles: [],
-      activeTile: null,
       maxZIndex: defaultTileZIndex
     };
   },
@@ -61,7 +54,7 @@ export default {
     this.tiles = JSON.parse(localStorage.getItem('tiles')) || getTilesUIConfig();
   },
   destroyed() {
-    localStorage.setItem('tiles', JSON.stringify(this.tiles));
+    this.saveTiles();
   },
   computed: {
     shownTiles() {
@@ -72,51 +65,41 @@ export default {
     }
   },
   methods: {
-    hideTile(tileId) {
-      this.setTileParams(tileId, {
-        isShown: false
-      });
-    },
-    showTile(tileId) {
-      this.setTileParams(tileId, {
+    showTile(tile) {
+      setTileParams(tile, {
         width: defaultTileWidth,
         height: defaultTileHeight,
         isShown: true
       });
     }, 
-    saveTileSize(sizingData) {
-      const { id: tileId, width, height } = sizingData;
-      this.setTileParams(tileId, {
-        width,
-        height
-      });
-    },
-    activateTile(tileId) {
-      this.activeTile = tileId;
-      this.setIncreasedIndex(tileId);
+    inactivateOtherTiles(activeTile) {
+      const tiles = this.tiles.filter((tile) => tile.id != activeTile.id);
+      for (let key in tiles) {
+        setTileParams(tiles[key], {
+          isActive: false
+        })
+      }
+      this.setIncreasedZIndex(activeTile);
     },
     getElPosition(e) {
       const { target, position } = e;
       const { x, y } = position;
-      const { tileId } = getTileProps(target);
-      this.setTileParams(tileId, {
+      const tile = getTileProps(target);
+      setTileParams(tile, {
         x,
         y
       });
-      this.setIncreasedIndex(tileId);
+      this.setIncreasedZIndex(tile);
+      this.saveTiles();
     },
-    setIncreasedIndex(tileId) {
+    setIncreasedZIndex(tile) {
       this.maxZIndex = this.maxZIndex + 1;
-      this.setTileParams(tileId, {
+      setTileParams(tile, {
         zIndex: this.maxZIndex
       });
     },
-    setTileParams(tileId, params) {
-      const tile = this.tiles.find((tile) => tile.id == tileId);
-
-      for (let key in params) {
-        this.$set(tile, key, params[key]);
-      }
+    saveTiles() {
+      localStorage.setItem('tiles', JSON.stringify(this.tiles));
     }
   }
 }

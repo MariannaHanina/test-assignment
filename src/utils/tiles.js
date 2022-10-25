@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 const defaultTop = 20;
 const gapBetweenTiles = 20;
 export const defaultWidth = 200;
@@ -23,5 +25,11 @@ export const getTilesUIConfig = () => {
 }
 
 export const getTileProps = (tile) => {
-  return tile.__vue__._props;
+  return tile.__vue__._props.tile;
+}
+
+export const setTileParams = (tile, params) => {
+  for (let key in params) {
+    Vue.set(tile, key, params[key]);
+  }
 }

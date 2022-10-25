@@ -1,11 +1,11 @@
 <template>
   <ul class="tiles-list">
-    <li v-for="{id, title} in tiles" :key="id">
+    <li v-for="tile in tiles" :key="tile.id">
       <button
         class="tiles-list-tile"
         type="button"
-        @click="() => onClick(id)"
-      >{{title}}</button>
+        @click="() => onClick(tile)"
+      >{{tile.title}}</button>
     </li>
   </ul>
 </template>
@@ -21,8 +21,8 @@ export default {
   },
   emits: ['tile-click'],
   methods: {
-    onClick(id) {
-      this.$emit('tile-click', id);
+    onClick(tile) {
+      this.$emit('tile-click', tile);
     }
   }
 }

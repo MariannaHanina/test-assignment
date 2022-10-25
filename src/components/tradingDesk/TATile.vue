@@ -1,14 +1,14 @@
 <template>
   <div
     class="tile"
-    :class="{ 'tile--active': isActive }"
+    :class="{ 'tile--active': tile.isActive }"
     :style="styles"
     @mousedown="activateTile"
     v-resize="resizeTile"
     draggable
   >
     <div class="tile-title">
-      <span>{{ title }}</span>
+      <span>{{ tile.title }}</span>
       <button type="button" class="tile-remove-button" @click="hideTile">-</button>
     </div>
     <div class="tile-body" />
@@ -16,42 +16,13 @@
 </template>
 
 <script>
+import { setTileParams } from '@/utils/tiles';
 
 export default {
   name:'TATile',
-  props: {
-    tileId: {
-      type: Number,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    isActive: {
-      type: Boolean,
-      default: false
-    },
-    width: {
-      type: Number,
-      default: 300
-    },
-    height: {
-      type: Number,
-      default: 100
-    },
-    x: {
-      type: Number,
-      required: true
-    },
-    y: {
-      type: Number,
-      required: true
-    },
-    zIndex: {
-      type: Number,
-      required: true
-    }
+  props: ['tile'],
+  model: {
+    prop: 'tile'
   },
   data() {
     return {
@@ -63,33 +34,37 @@ export default {
   },
   computed: {
     styles: (vm) => {
+      const { width, height, x, y, zIndex } = vm.tile;
       return {
-        width: `${vm.width}px`,
-        height: `${vm.height}px`,
-        left: `${vm.x}px`,
-        top: `${vm.y}px`,
-        'z-index': vm.zIndex
+        width: `${width}px`,
+        height: `${height}px`,
+        left: `${x}px`,
+        top: `${y}px`,
+        'z-index': zIndex
       };
     }
   },
-  beforeDestroy() {
-    this.$emit('save-tile-size', {
-      id: this.tileId,
-      width: this.newWidth,
-      height: this.newHeight 
-    })
-  },
-  emits: ['hide-tile', 'save-tile-size', 'mousedown'],
+  emits: ['inactivate-other-tiles', 'increase-z-index', 'tile-resized'],
   methods: {
     activateTile() {
-      this.$emit('mousedown', this.tileId);
+      setTileParams(this.tile, {
+        isActive: true
+      });
+      this.$emit('inactivate-other-tiles', this.tile);
+      this.$emit('increase-z-index', this.tile);
     },
     hideTile() {
-      this.$emit('hide-tile', this.tileId);
+      setTileParams(this.tile, {
+        isActive: false,
+        isShown: false
+      });
     },
     resizeTile({ width, height }) {
-      this.newWidth = width;
-      this.newHeight = height;
+      setTileParams(this.tile, {
+        width,
+        height
+      });
+      this.$emit('tile-resized');
     }
   }
 }
