@@ -19,7 +19,7 @@
 import { setTileParams } from '@/utils/tiles';
 
 export default {
-  name:'TATile',
+  name:'TradingDeskTile',
   props: ['tile'],
   model: {
     prop: 'tile'

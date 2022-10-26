@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'TATileList',
+  name: 'TradingDeskTileList',
   props: {
     tiles: {
       type: Array,

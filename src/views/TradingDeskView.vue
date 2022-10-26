@@ -1,8 +1,8 @@
 <template>
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
-    <ta-trading-desk @get-el-position="getElPosition">
-      <ta-tile
+    <trading-desk @get-el-position="getElPosition">
+      <trading-desk-tile
         v-for="(tile, index) in shownTiles"
         v-model="shownTiles[index]"
         :key="tile.id"
@@ -11,14 +11,14 @@
         @tile-resized="saveTiles"
       />
       <template #actions>
-        <ta-trading-desk-actions >
-          <ta-tiles-list
+        <trading-desk-actions >
+          <trading-desk-tiles-list
             :tiles="hiddenTiles"
             @tile-click="showTile"
           />
-        </ta-trading-desk-actions>
+        </trading-desk-actions>
       </template>
-    </ta-trading-desk>
+    </trading-desk>
   </div>
 </template>
 
@@ -31,18 +31,18 @@ import {
   defautlHeight as defaultTileHeight,
   defaultZIndex as defaultTileZIndex
 } from '@/utils/tiles';
-import TATradingDesk from '@/components/tradingDesk/TATradingDesk';
-import TATile from '@/components/tradingDesk/TATile';
-import TATradingDeskActions from '@/components/tradingDesk/TATradingDeskActions.vue';
-import TATileList from '@/components/tradingDesk/TATilesList';
+import TradingDesk from '@/components/tradingDesk/TradingDesk';
+import TradingDeskTile from '@/components/tradingDesk/TradingDeskTile';
+import TradingDeskActions from '@/components/tradingDesk/TradingDeskActions';
+import TradingDeskTileList from '@/components/tradingDesk/TradingDeskTilesList';
 
 export default {
   name: "TradingDeskView",
   components: {
-    'ta-trading-desk': TATradingDesk,
-    'ta-tile': TATile,
-    'ta-tiles-list': TATileList,
-    'ta-trading-desk-actions': TATradingDeskActions
+    'trading-desk': TradingDesk,
+    'trading-desk-tile': TradingDeskTile,
+    'trading-desk-tiles-list': TradingDeskTileList,
+    'trading-desk-actions': TradingDeskActions
   },
   data: () => {
     return {

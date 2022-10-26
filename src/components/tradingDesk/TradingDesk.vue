@@ -15,7 +15,7 @@
 import DragAndDropArea from '@/components/ui/DragAndDropArea';
 
 export default {
-  name:'TATradingDesk',
+  name:'TradingDesk',
   components: {
     'drag-and-drop-area': DragAndDropArea
   },
