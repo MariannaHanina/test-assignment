@@ -2,7 +2,6 @@ const getInputsInfo = (inputs) => {
   const inputsAddresses = [];
   let sumInputsValue = 0;
 
-  console.log('inputs', inputs);
   for (let input of inputs) {
     const { addr, value } = input.prev_out;
     inputsAddresses.push(addr);

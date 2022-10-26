@@ -13,14 +13,12 @@ export default class TransactionsService {
   }
 
   subscribe() {
-    console.log('subscribe');
     this.#websocket.send({
       "op": "unconfirmed_sub"
     });
   }
 
   unsubscribe() {
-    console.log('unsubscribe');
     this.#websocket.send({
       "op": "unconfirmed_unsub"
     });
