@@ -31,6 +31,7 @@ import {
   defautlHeight as defaultTileHeight,
   defaultZIndex as defaultTileZIndex
 } from '@/utils/tiles';
+import TradingDeskService from '@/services/TradingDeskService';
 import TradingDesk from '@/components/tradingDesk/TradingDesk';
 import TradingDeskTile from '@/components/tradingDesk/TradingDeskTile';
 import TradingDeskActions from '@/components/tradingDesk/TradingDeskActions';
@@ -47,11 +48,11 @@ export default {
   data: () => {
     return {
       tiles: [],
-      maxZIndex: defaultTileZIndex
+      zIndex: defaultTileZIndex
     };
   },
   beforeMount() {
-    this.tiles = JSON.parse(localStorage.getItem('tiles')) || getTilesUIConfig();
+    this.tiles = TradingDeskService.getTiles() || getTilesUIConfig();
   },
   destroyed() {
     this.saveTiles();
@@ -62,6 +63,16 @@ export default {
     },
     hiddenTiles() {
       return this.tiles.filter((tile) => !tile.isShown);
+    },
+    maxZIndex: {
+      get() {
+        return this.tiles.reduce((max, { zIndex }) => {
+          return (zIndex > max) ? zIndex : max;
+        }, this.zIndex);
+      },
+      set(value) {
+        this.zIndex = value;
+      }
     }
   },
   methods: {
@@ -99,7 +110,7 @@ export default {
       });
     },
     saveTiles() {
-      localStorage.setItem('tiles', JSON.stringify(this.tiles));
+      TradingDeskService.saveTiles(this.tiles);
     }
   }
 }

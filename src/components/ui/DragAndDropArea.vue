@@ -56,7 +56,6 @@ export default {
 
 <style>
 .drag-and-drop-area {
-  background: lightgray;
   height: 100%;
   overflow: hidden;
 }
