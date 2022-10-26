@@ -11,12 +11,12 @@ const routes = [
     component: TradingDeskView
   },
   {
-    path: '/websocket',
-    name: 'websocket',
+    path: '/transactions',
+    name: 'transactions',
     // route level code-splitting
-    // this generates a separate chunk (websocket.[hash].js) for this route
+    // this generates a separate chunk (transactions.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "websocket" */ '../views/WebSocketView.vue')
+    component: () => import(/* webpackChunkName: "transactions" */ '../views/TransactionsView.vue')
   }
 ]
 
