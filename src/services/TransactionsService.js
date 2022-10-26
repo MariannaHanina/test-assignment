@@ -27,4 +27,9 @@ export default class TransactionsService {
   async getTransaction(callback) {
     this.#websocket.onMessage(callback); 
   }
+
+  async getAlert(callback) {
+    this.#websocket.onClose(callback);
+    this.#websocket.onError(callback);
+  }
 }

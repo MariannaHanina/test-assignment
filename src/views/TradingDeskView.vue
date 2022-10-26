@@ -11,14 +11,24 @@
         @tile-resized="saveTiles"
       />
       <template #actions>
-        <trading-desk-actions >
-          <trading-desk-tiles-list
-            :tiles="hiddenTiles"
-            @tile-click="showTile"
-          />
-        </trading-desk-actions>
+        <trading-desk-actions v-if="hiddenTiles.length" @return-click="openModal"/>
       </template>
     </trading-desk>
+    <modal-dialog
+      v-show="modalIsShown"
+      @close="closeModal"
+    >
+      <template #header>
+        Return tale on Trading Desk
+      </template>
+      <div>
+        <p>Select a tile from the list to return it to the Desk</p>
+        <trading-desk-tiles-list
+          :tiles="hiddenTiles"
+          @tile-click="showTile"
+        />
+      </div>
+    </modal-dialog>
   </div>
 </template>
 
@@ -36,6 +46,7 @@ import TradingDesk from '@/components/tradingDesk/TradingDesk';
 import TradingDeskTile from '@/components/tradingDesk/TradingDeskTile';
 import TradingDeskActions from '@/components/tradingDesk/TradingDeskActions';
 import TradingDeskTileList from '@/components/tradingDesk/TradingDeskTilesList';
+import ModalDialog from '@/components/ui/ModalDialog';
 
 export default {
   name: "TradingDeskView",
@@ -43,12 +54,14 @@ export default {
     'trading-desk': TradingDesk,
     'trading-desk-tile': TradingDeskTile,
     'trading-desk-tiles-list': TradingDeskTileList,
-    'trading-desk-actions': TradingDeskActions
+    'trading-desk-actions': TradingDeskActions,
+    'modal-dialog': ModalDialog
   },
   data: () => {
     return {
       tiles: [],
-      zIndex: defaultTileZIndex
+      zIndex: defaultTileZIndex,
+      modalIsShown: false
     };
   },
   beforeMount() {
@@ -80,8 +93,14 @@ export default {
       setTileParams(tile, {
         width: defaultTileWidth,
         height: defaultTileHeight,
-        isShown: true
+        x: window.innerWidth/2 - defaultTileWidth/2,
+        y: 100,
+        isShown: true,
+        isActive: true
       });
+      this.closeModal();
+      this.inactivateOtherTiles(tile);
+
     }, 
     inactivateOtherTiles(activeTile) {
       const tiles = this.tiles.filter((tile) => tile.id != activeTile.id);
@@ -111,6 +130,12 @@ export default {
     },
     saveTiles() {
       TradingDeskService.saveTiles(this.tiles);
+    },
+    openModal() {
+      this.modalIsShown = true;
+    },
+    closeModal() {
+      this.modalIsShown = false;
     }
   }
 }

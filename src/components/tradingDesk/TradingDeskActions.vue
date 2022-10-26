@@ -3,30 +3,20 @@
     <button
       class="trading-desk-actions-button"
       type="button"
-      @click="showList"
+      @click="onClick"
     >
       + Return tile to trading desk
     </button>
-    <div v-if="listIsShown" @click="hideList">
-      <slot />
-    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'TradingDeskActions',
-  data() {
-    return {
-      listIsShown: false,
-    }
-  },
+  emits: ['return-click'],
   methods: {
-    showList() {
-      this.listIsShown = true;
-    },
-    hideList() {
-      this.listIsShown = false;
+    onClick() {
+      this.$emit('return-click');
     }
   }
 }

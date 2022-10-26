@@ -2,7 +2,7 @@ import Vue from "vue";
 
 const defaultTop = 20;
 const gapBetweenTiles = 20;
-export const defaultWidth = 200;
+export const defaultWidth = 300;
 export const defautlHeight = 100;
 export const defaultZIndex = 100;
 

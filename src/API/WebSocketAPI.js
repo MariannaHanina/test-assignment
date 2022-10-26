@@ -11,8 +11,6 @@ export default class WebSocketAPI {
     return new Promise((resolve, reject) => {
       this.#socket.onopen = () => {
         if (this.#socket.readyState === 1) {
-          this.onClose();
-          this.onError();
           resolve('connected');
         }
         reject('rejected');
@@ -34,24 +32,30 @@ export default class WebSocketAPI {
     }
   }
 
-  onClose() {
+  onClose(callback) {
     this.#socket.onclose = (e) => {
       let message;
 
       if (e.wasClean) {
-        message = 'Соединение закрыто чисто';
+        message = 'Connection closed cleanly';
       } else {
-        message = 'Обрыв соединения';
+        message = 'Connection failure';
       }
 
       console.log(`Code: ${e.code} cause: ${e.reason}`);
-      alert(message);
+      callback({
+        type: 'close',
+        message
+      });
     };
   }
 
-  onError() {
+  onError(callback) {
     this.#socket.onerror = (error) => {
-      alert('Ошибка ' + error.message);
+      callback({
+        type: 'error',
+        message: error.message
+      })
     }
   }
 }

@@ -14,6 +14,16 @@
       v-if="transactions.length" 
       :transactions="transactions"
     />
+    <modal-dialog v-show="!!alerts.length" @close="closeModal">
+      <template #header>
+        Blockchain Connection Alerts
+      </template>
+      <div>
+        <div v-for="{id, type, message} in alerts" :key="id">
+          {{type}}: {{message}}
+        </div> 
+      </div>
+    </modal-dialog>
   </div>
 </template>
 
@@ -23,21 +33,21 @@ import TransactionsService from '@/services/TransactionsService';
 import TransactionsActions from '@/components/transactions/TransactionsActions';
 import TransactionsSum from '@/components/transactions/TransactionsSum';
 import TransactionsTable from '@/components/transactions/TransactionsTable';
+import ModalDialog from '@/components/ui/ModalDialog';
 
 export default {
   name: 'TransactionsView',
   components: {
     'transactions-actions': TransactionsActions,
     'transactions-sum': TransactionsSum,
-    'transactions-table': TransactionsTable
+    'transactions-table': TransactionsTable,
+    'modal-dialog': ModalDialog
   },
   data() {
     return {
-      transactions: []
+      transactions: [],
+      alerts: []
     }
-  },
-  beforeDestroy() {
-
   },
   async created() {
     this.service = new TransactionsService();
@@ -52,6 +62,7 @@ export default {
     start() {
       this.service.subscribe();
       this.service.getTransaction(this.addTransaction);
+      this.service.getAlert(this.addAlert);
     },
     stop() {
       this.service.unsubscribe();
@@ -62,6 +73,12 @@ export default {
     addTransaction(data) {
       const formattedData = formatTransactionData(data);
       this.transactions = [...this.transactions, formattedData];
+    },
+    addAlert(alertMessage) {
+      this.alerts = [...this.alerts,  {...alertMessage, id: Date.now()}];
+    },
+    closeModal() {
+      this.alerts = [];
     }
   }
 }

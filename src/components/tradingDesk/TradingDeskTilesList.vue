@@ -31,8 +31,12 @@ export default {
 <style scoped>
 .tiles-list {
   list-style: none;
+  text-align: center;
+  padding: 0;
 }
 .tiles-list-tile {
   width: 100px;
+  padding: 10px;
+  margin-bottom: 15px;
 }
 </style>
