@@ -1,7 +1,7 @@
 <template>
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
-    <trading-desk @get-el-position="getElPosition">
+    <trading-desk @end-position-change="setElEndPosition" @position-change="setElPosition">
       <trading-desk-tile
         v-for="(tile, index) in shownTiles"
         v-model="shownTiles[index]"
@@ -41,6 +41,7 @@ import {
   defautlHeight as defaultTileHeight,
   defaultZIndex as defaultTileZIndex
 } from '@/utils/tiles';
+
 import TradingDeskService from '@/services/TradingDeskService';
 import TradingDesk from '@/components/tradingDesk/TradingDesk';
 import TradingDeskTile from '@/components/tradingDesk/TradingDeskTile';
@@ -111,14 +112,17 @@ export default {
       }
       this.setIncreasedZIndex(activeTile);
     },
-    getElPosition(e) {
+    setElPosition(e) {
       const { target, position } = e;
-      const { x, y } = position;
       const tile = getTileProps(target);
-      setTileParams(tile, {
-        x,
-        y
-      });
+      
+      setTileParams(tile, position);
+    },
+    setElEndPosition(e) {
+      const { target } = e;
+      const tile = getTileProps(target);
+    
+      this.setElPosition(e);
       this.setIncreasedZIndex(tile);
       this.saveTiles();
     },

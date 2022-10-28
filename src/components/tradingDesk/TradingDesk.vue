@@ -1,7 +1,10 @@
 <template>
   <div class="trading-desk">
     <div class="trading-desk-tiles">
-      <drag-and-drop-area @get-el-position="getElPosition">
+      <drag-and-drop-area
+        @el-end-drag="getElEndPosition" 
+        @el-drag="getElPosition"
+      >
         <slot />
       </drag-and-drop-area>
     </div>
@@ -19,10 +22,13 @@ export default {
   components: {
     'drag-and-drop-area': DragAndDropArea
   },
-  emits: ['get-el-position'],
+  emits: ['end-position-chage', 'position-change'],
   methods: {
+    getElEndPosition(e) {
+      this.$emit('end-position-change', e);
+    },
     getElPosition(e) {
-      this.$emit('get-el-position', e);
+      this.$emit('position-change', e)
     }
   }
 }
@@ -30,8 +36,7 @@ export default {
 
 <style scoped>
 .trading-desk-tiles {
-  position: relative;
+  border: 1px solid lightgray;
   height: 70vh;
-
 }
 </style>
