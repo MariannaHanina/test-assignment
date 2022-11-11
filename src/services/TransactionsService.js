@@ -12,6 +12,10 @@ export default class TransactionsService {
     return await this.#websocket.connect();
   }
 
+  close() {
+    this.#websocket.close();
+  }
+
   subscribe() {
     this.#websocket.send({
       "op": "unconfirmed_sub"

@@ -46,17 +46,14 @@ export default {
   data() {
     return {
       transactions: [],
-      alerts: []
+      alerts: [],
+      sum: 0
     }
   },
   async created() {
     this.service = new TransactionsService();
     await this.service.connect();
-  },
-  computed: {
-    sum() {
-      return this.transactions.reduce((fullSum, { sum }) => fullSum + sum, 0);
-    }
+    window.addEventListener('beforeunload', this.service.close);
   },
   methods: {
     start() {
@@ -73,6 +70,7 @@ export default {
     addTransaction(data) {
       const formattedData = formatTransactionData(data);
       this.transactions = [...this.transactions, formattedData];
+      this.sum += formattedData.sum;
     },
     addAlert(alertMessage) {
       this.alerts = [...this.alerts,  {...alertMessage, id: Date.now()}];

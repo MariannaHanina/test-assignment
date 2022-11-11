@@ -10,7 +10,7 @@ export default class WebSocketAPI {
 
     return new Promise((resolve, reject) => {
       this.#socket.onopen = () => {
-        if (this.#socket.readyState === 1) {
+        if (this.#socket.readyState === WebSocket.OPEN) {
           resolve('connected');
         }
         reject('rejected');
@@ -21,6 +21,10 @@ export default class WebSocketAPI {
   send(message) {
     const messageJSON = JSON.stringify(message);
     this.#socket.send(messageJSON);
+  }
+
+  close() {
+    this.#socket.close();
   }
 
   onMessage(callback) {
