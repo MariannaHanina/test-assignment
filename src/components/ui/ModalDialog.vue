@@ -44,7 +44,7 @@
   top: 15%;
   left: calc(50% - 15vw);
   
-  z-index: 1000000000;
+  z-index: 100;
 }
 .modal-dialog-header {
   border-bottom: 1px solid grey;
