@@ -4,7 +4,7 @@
       <button
         class="tiles-list-tile"
         type="button"
-        @click="() => onClick(tile)"
+        @click="() => onClick(tile.id)"
       >{{tile.title}}</button>
     </li>
   </ul>
@@ -21,8 +21,8 @@ export default {
   },
   emits: ['tile-click'],
   methods: {
-    onClick(tile) {
-      this.$emit('tile-click', tile);
+    onClick(id) {
+      this.$emit('tile-click', id);
     }
   }
 }

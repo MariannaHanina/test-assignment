@@ -1,17 +1,37 @@
 <template>
   <div class="trading-desk-view">
     <h1>Trading desk</h1>
-    <trading-desk @end-position-change="setElEndPosition" @position-change="setElPosition">
+    <trading-desk
+      @position-change="setTilePosition"
+      @end-position-change="saveTiles"
+      ref="desk"
+    >
       <trading-desk-tile
         v-for="(tile, index) in shownTiles"
         v-model="shownTiles[index]"
         :key="tile.id"
-        @inactivate-other-tiles="inactivateOtherTiles"
-        @increase-z-index="setIncreasedZIndex"
+        @activate-tile="activateTile"
+        @close-tile="saveTiles"
         @tile-resized="saveTiles"
       />
       <template #actions>
-        <trading-desk-actions v-if="hiddenTiles.length" @return-click="openModal"/>
+        <div class="trading-desk-actions">
+          <button
+            v-if="hiddenTiles.length"
+            class="trading-desk-actions-button"
+            type="button"
+            @click="openModal"
+          >
+            + Return tile to trading desk
+          </button>
+          <button
+            class="trading-desk-actions-button"
+            type="button"
+            @click="resetTiles"
+          >
+            Reset desk
+          </button>
+        </div>
       </template>
     </trading-desk>
     <modal-dialog
@@ -33,19 +53,11 @@
 </template>
 
 <script>
-import { 
-  getTilesUIConfig, 
-  getTileProps,
-  setTileParams,
-  defaultWidth as defaultTileWidth,
-  defautlHeight as defaultTileHeight,
-  defaultZIndex as defaultTileZIndex
-} from '@/utils/tiles';
+import Tiles from '@/entities/TilesClass';
 
 import TradingDeskService from '@/services/TradingDeskService';
 import TradingDesk from '@/components/tradingDesk/TradingDesk';
 import TradingDeskTile from '@/components/tradingDesk/TradingDeskTile';
-import TradingDeskActions from '@/components/tradingDesk/TradingDeskActions';
 import TradingDeskTileList from '@/components/tradingDesk/TradingDeskTilesList';
 import ModalDialog from '@/components/ui/ModalDialog';
 
@@ -55,92 +67,79 @@ export default {
     'trading-desk': TradingDesk,
     'trading-desk-tile': TradingDeskTile,
     'trading-desk-tiles-list': TradingDeskTileList,
-    'trading-desk-actions': TradingDeskActions,
     'modal-dialog': ModalDialog
   },
-  data: () => {
+  data() {
     return {
-      tiles: [],
-      zIndex: defaultTileZIndex,
+      tiles: null,
       modalIsShown: false
     };
   },
-  beforeMount() {
-    this.tiles = TradingDeskService.getTiles() || getTilesUIConfig();
+
+  mounted() {
+    const { offsetWidth: deskWidth, offsetHeight: deskHeight } = this.$refs['desk'].$el;
+    this.deskWidth = deskWidth;
+    this.deskHeight = deskHeight;
+
+    const savedTiles = TradingDeskService.getTiles();
+
+    if (savedTiles) {
+      this.tiles = new Tiles(deskWidth, deskHeight, 5, savedTiles);
+      return;
+    }
+    
+    this.tiles = new Tiles(deskWidth, deskHeight);
   },
   destroyed() {
     this.saveTiles();
   },
   computed: {
     shownTiles() {
-      return this.tiles.filter((tile) => tile.isShown);
+      return this.tiles?.getShownTiles() || [];
     },
     hiddenTiles() {
-      return this.tiles.filter((tile) => !tile.isShown);
+      return this.tiles?.getHiddenTiles() || [];
     },
-    maxZIndex: {
-      get() {
-        return this.tiles.reduce((max, { zIndex }) => {
-          return (zIndex > max) ? zIndex : max;
-        }, this.zIndex);
-      },
-      set(value) {
-        this.zIndex = value;
-      }
-    }
   },
   methods: {
-    showTile(tile) {
-      setTileParams(tile, {
-        width: defaultTileWidth,
-        height: defaultTileHeight,
-        x: window.innerWidth/2 - defaultTileWidth/2,
-        y: 100,
-        isShown: true,
-        isActive: true
-      });
+    showTile(id) {
+      this.tiles.showTileById(id);
       this.closeModal();
-      this.inactivateOtherTiles(tile);
-
     }, 
-    inactivateOtherTiles(activeTile) {
-      const tiles = this.tiles.filter((tile) => tile.id != activeTile.id);
-      for (let key in tiles) {
-        setTileParams(tiles[key], {
-          isActive: false
-        })
-      }
-      this.setIncreasedZIndex(activeTile);
-    },
-    setElPosition(e) {
-      const { target, position } = e;
-      const tile = getTileProps(target);
-      
-      setTileParams(tile, position);
-    },
-    setElEndPosition(e) {
-      const { target } = e;
-      const tile = getTileProps(target);
-    
-      this.setElPosition(e);
-      this.setIncreasedZIndex(tile);
+    activateTile(id) {
+      this.tiles.setActiveTile(id);
       this.saveTiles();
     },
-    setIncreasedZIndex(tile) {
-      this.maxZIndex = this.maxZIndex + 1;
-      setTileParams(tile, {
-        zIndex: this.maxZIndex
-      });
-    },
-    saveTiles() {
-      TradingDeskService.saveTiles(this.tiles);
+    setTilePosition(e) {
+      const { targetComponent, position } = e;
+      const { tile } = targetComponent;
+      const { x, y } = position;
+
+      tile.setPosition(x, y);
     },
     openModal() {
       this.modalIsShown = true;
     },
     closeModal() {
       this.modalIsShown = false;
+    },
+    saveTiles() {
+      TradingDeskService.saveTiles(this.tiles.list);
+    },
+    resetTiles() {
+      TradingDeskService.removeTiles();
+      this.tiles = new Tiles(this.deskWidth, this.deskHeight);
     }
   }
 }
 </script>
+
+<style scoped>
+.trading-desk-actions {
+  display: flex;
+  justify-content: center;
+}
+.trading-desk-actions-button {
+  padding: 15px 20px;
+}
+</style>

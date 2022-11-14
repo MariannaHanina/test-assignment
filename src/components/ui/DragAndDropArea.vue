@@ -41,20 +41,14 @@ export default {
       this.cursorStartPosition = {x: pageX, y: pageY};
       e.dataTransfer.setDragImage(e.target, window.outerWidth, window.outerHeight);
     },
-    endDrag(e) {
-      const { pageX, pageY } = e;
-      this.cursorEndPosition = {x: pageX, y: pageY};
-      this.dragginElEndPosition = this.calcElPosition(pageX, pageY);
-      this.$emit('el-end-drag', {
-        target: this.targetEl,
-        position: this.dragginElEndPosition
-      });
+    endDrag() {
+      this.$emit('el-end-drag');
     },
     drag(e) {
       const { pageX, pageY } = e;
 
       this.$emit('el-drag', {
-        target: this.targetEl,
+        targetComponent: this.targetEl.__vue__,
         position: this.calcElPosition(pageX, pageY)
       });
     },

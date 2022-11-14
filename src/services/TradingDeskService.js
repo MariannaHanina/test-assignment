@@ -6,4 +6,8 @@ export default class TradingDeskService {
   static getTiles() {
     return JSON.parse(localStorage.getItem('tiles'));
   }
+
+  static removeTiles() {
+    localStorage.removeItem('tiles');
+  }
 }

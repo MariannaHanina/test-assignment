@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { setTileParams } from '@/utils/tiles';
 
 export default {
   name:'TradingDeskTile',
@@ -44,26 +43,17 @@ export default {
       };
     }
   },
-  emits: ['inactivate-other-tiles', 'increase-z-index', 'tile-resized'],
+  emits: ['activate-tile', 'close-tile', 'tile-resized'],
   methods: {
     activateTile() {
-      setTileParams(this.tile, {
-        isActive: true
-      });
-      this.$emit('inactivate-other-tiles', this.tile);
-      this.$emit('increase-z-index', this.tile);
+      this.$emit('activate-tile', this.tile.id);
     },
     hideTile() {
-      setTileParams(this.tile, {
-        isActive: false,
-        isShown: false
-      });
+      this.tile.hide();
+      this.$emit('close-tile', this.tile.id);
     },
     resizeTile({ width, height }) {
-      setTileParams(this.tile, {
-        width,
-        height
-      });
+      this.tile.setSize(width, height);
       this.$emit('tile-resized');
     }
   }
