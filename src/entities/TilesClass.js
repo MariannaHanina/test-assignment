@@ -11,7 +11,7 @@ export default class Tiles {
   #maxZIndex = 1;
   list = [];
 
-  constructor(containerWidth, containerHeight, amount = 15, tiles = []) {
+  constructor(containerWidth, containerHeight, amount = 5, tiles = []) {
     this.#amount = amount;
     this.#containerWidth = containerWidth;
     this.#containerHeight = containerHeight;
