@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="isTileDataValid"
     class="tile"
     :class="{ 'tile--active': tile.isActive }"
     :style="styles"
@@ -9,31 +10,37 @@
   >
     <div class="tile-title">
       <span>{{ tile.title }}</span>
-      <button type="button" class="tile-remove-button" @click="hideTile">-</button>
+      <button
+        type="button"
+        class="tile-remove-button"
+        @click="hideTile"
+      >
+        -
+      </button>
     </div>
     <div class="tile-body" />
   </div>
 </template>
 
 <script>
+import Tile from '@/entities/TileClass';
 
 export default {
   name:'TradingDeskTile',
-  props: ['tile'],
+  props: {
+    tile: {
+      type: Tile,
+      required: true,
+      validator: (value) => (value instanceof Tile)
+    }
+  },
   model: {
     prop: 'tile'
   },
-  data() {
-    return {
-      newWidth: null,
-      newHeight: null,
-      initCoordinats: {},
-      newCoordinats: null
-    };
-  },
   computed: {
-    styles: (vm) => {
-      const { width, height, x, y, zIndex } = vm.tile;
+    styles({ tile }) {
+      console.log(tile instanceof Tile);
+      const { width, height, x, y, zIndex } = tile;
       return {
         width: `${width}px`,
         height: `${height}px`,
@@ -41,8 +48,16 @@ export default {
         top: `${y}px`,
         'z-index': zIndex
       };
+    },
+    isTileDataValid({ tile }) {
+      return tile instanceof Tile;
     }
   },
+  mounted() {
+    if (!this.isTileDataValid) {
+      throw new Error('Tile data is not instance of Tile Class');
+    }
+  },  
   emits: ['activate-tile', 'close-tile', 'tile-resized'],
   methods: {
     activateTile() {

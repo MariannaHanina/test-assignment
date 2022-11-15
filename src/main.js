@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import './errorHandler'
 import ResizeDirective from './directives/ResizeDirective';
 import BTCFilter from './filters/BTСFilter';
 

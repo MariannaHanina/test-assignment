@@ -14,6 +14,12 @@
         @close-tile="saveTiles"
         @tile-resized="saveTiles"
       />
+      <trading-desk-tile
+        v-model="tile"
+        @activate-tile="activateTile"
+        @close-tile="saveTiles"
+        @tile-resized="saveTiles"
+      />
       <template #actions>
         <div class="trading-desk-actions">
           <button
@@ -71,11 +77,11 @@ export default {
   },
   data() {
     return {
+      tile: {},
       tiles: null,
       modalIsShown: false
     };
   },
-
   mounted() {
     const { offsetWidth: deskWidth, offsetHeight: deskHeight } = this.$refs['desk'].$el;
     this.deskWidth = deskWidth;
