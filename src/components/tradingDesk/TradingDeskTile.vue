@@ -30,8 +30,7 @@ export default {
   props: {
     tile: {
       type: Tile,
-      required: true,
-      validator: (value) => (value instanceof Tile)
+      required: true
     }
   },
   model: {
@@ -39,7 +38,6 @@ export default {
   },
   computed: {
     styles({ tile }) {
-      console.log(tile instanceof Tile);
       const { width, height, x, y, zIndex } = tile;
       return {
         width: `${width}px`,

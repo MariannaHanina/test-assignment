@@ -24,8 +24,8 @@ export default {
   },
   emits: ['end-position-chage', 'position-change'],
   methods: {
-    getElEndPosition(e) {
-      this.$emit('end-position-change', e);
+    getElEndPosition() {
+      this.$emit('end-position-change');
     },
     getElPosition(e) {
       this.$emit('position-change', e)

@@ -9,7 +9,10 @@ export default class Tile {
   y;
   zIndex = 1;
 
-  constructor(id, defaultLeft, defaultTop, defaultWidth = 300, defaultHeight = 100, additionalProps = null) {  
+  constructor(id, defaultLeft = 0, defaultTop = 0, defaultWidth = 300, defaultHeight = 100, additionalProps = null) {
+    if (id === undefined || id === null ) {
+      throw new Error('Required parameter ID is not passed.');
+    }
     this.id = id;
     this.title = `Tile ${this.id + 1}`;
     this.setSize(defaultWidth, defaultHeight);

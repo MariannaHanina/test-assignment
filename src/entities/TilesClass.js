@@ -12,6 +12,9 @@ export default class Tiles {
   list = [];
 
   constructor(containerWidth, containerHeight, amount = 5, tiles = []) {
+    if (!containerWidth || !containerHeight) {
+      throw new Error('Required parameters containerWidth and containerHeight are not passed.');
+    }
     this.#amount = amount;
     this.#containerWidth = containerWidth;
     this.#containerHeight = containerHeight;
